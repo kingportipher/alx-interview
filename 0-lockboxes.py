@@ -1,37 +1,24 @@
 #!/usr/bin/python3
 
 def canUnlockAll(boxes):
-    # Total number of boxes
-    n = len(boxes)
-    
-    # Set to keep track of unlocked boxes
-    unlocked = [False] * n
-    unlocked[0] = True  # The first box is always unlocked
-    
-    # Stack for DFS approach (could also use a queue for BFS)
-    stack = [0]
-    
-    # While there are boxes to explore
-    while stack:
-        # Get the current box
-        current_box = stack.pop()
-        
-        # Try to unlock boxes with keys in the current box
-        for key in boxes[current_box]:
-            if key < n and not unlocked[key]:
-                unlocked[key] = True
-                stack.append(key)
-    
-    # Check if all boxes are unlocked
-    return all(unlocked)
+  """Determines if all boxes can be opened.
 
-# Test cases
-if __name__ == "__main__":
-    boxes = [[1], [2], [3], [4], []]
-    print(canUnlockAll(boxes)) 
+  Args:
+    boxes: A list of lists representing boxes and their keys.
 
-    boxes = [[1, 4, 6], [2], [0, 4, 1], [5, 6, 2], [3], [4, 1], [6]]
-    print(canUnlockAll(boxes))
+  Returns:
+    True if all boxes can be opened, False otherwise.
+  """
 
-    boxes = [[1, 4], [2], [0, 4, 1], [3], [], [4, 1], [5, 6]]
-    print(canUnlockAll(boxes))
+  num_boxes = len(boxes)
+  visited = [False] * num_boxes
+  visited[0] = True  # First box is unlocked
+
+  def dfs(box_index):
+    for key in boxes[box_index]:
+      if 0 <= key < num_boxes and not visited[key]:
+        visited[key] = True
+        dfs(key)
+
+  dfs(0)
+  return all(visited)
