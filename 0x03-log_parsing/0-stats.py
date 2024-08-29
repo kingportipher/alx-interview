@@ -1,35 +1,48 @@
-from collections import Counter
+#!/usr/bin/env python3
+import sys
 
-def is_valid_line(line):
-  """Checks if the line matches the expected format."""
-  parts = line.strip().split()
-  return len(parts) == 6 and parts[2] == 'GET' and parts[4].isdigit() and parts[5].isdigit()
+def print_stats(total_size, status_codes):
+    """
+    Print the accumulated metrics.
+    """
+    print(f"File size: {total_size}")
+    for code in sorted(status_codes):
+        if status_codes[code] > 0:
+            print(f"{code}: {status_codes[code]}")
 
-def parse_line(line):
-  """Extracts data from a valid line."""
-  parts = line.strip().split()
-  return int(parts[5])
-
-total_size = 0
-status_counts = Counter()
-line_count = 0
-
-for line in sys.stdin:
-  if is_valid_line(line):
-    total_size += parse_line(line)
-    status_counts[int(line.split()[4])] += 1
-    line_count += 1
-
-  # Print statistics every 10 lines or on keyboard interrupt
-  if line_count % 10 == 0 or line_count > 0 and not line.strip(): 
-    print(f"Total file size: {total_size}")
-    for code, count in sorted(status_counts.items()):
-      print(f"{code}: {count}")
+def main():
     total_size = 0
-    status_counts.clear()
+    status_codes = {200: 0, 301: 0, 400: 0, 401: 0, 403: 0, 404: 0, 405: 0, 500: 0}
     line_count = 0
 
-# Print remaining statistics on script exit (including the last 10 lines)
-print(f"Total file size: {total_size}")
-for code, count in sorted(status_counts.items()):
-  print(f"{code}: {count}")
+    try:
+        for line in sys.stdin:
+            parts = line.split()
+            if len(parts) != 9:
+                continue
+
+            # Extract the file size and status code from the line
+            try:
+                file_size = int(parts[-1])
+                status_code = int(parts[-2])
+                total_size += file_size
+
+                if status_code in status_codes:
+                    status_codes[status_code] += 1
+            except (ValueError, IndexError):
+                continue
+
+            line_count += 1
+
+            if line_count % 10 == 0:
+                print_stats(total_size, status_codes)
+
+    except KeyboardInterrupt:
+        print_stats(total_size, status_codes)
+        raise
+
+    # Print final stats after all lines have been processed
+    print_stats(total_size, status_codes)
+
+if __name__ == "__main__":
+    main()
