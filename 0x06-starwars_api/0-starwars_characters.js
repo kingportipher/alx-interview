@@ -18,14 +18,10 @@ request(url, (error, response, body) => {
     console.error('Error:', error);
     return;
   }
-
-  // Parse the response body
   const movieData = JSON.parse(body);
 
-  // Get the list of character URLs
   const characters = movieData.characters;
 
-  // Fetch each character's data and print their name
   characters.forEach((characterUrl) => {
     request(characterUrl, (error, response, body) => {
       if (error) {
