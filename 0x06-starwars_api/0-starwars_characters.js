@@ -1,43 +1,30 @@
 #!/usr/bin/node
-/**
- * Script to fetch and display Star Wars movie characters.
- */
 
-const request = require('request');
+const util = require('util');
+const request = util.promisify(require('request'));
+const filmId = process.argv[2];
 
-// Check if a Movie ID was passed as a command-line argument
-if (process.argv.length < 3) {
-  console.error('Usage: ./0-starwars_characters.js <Movie ID>');
-  process.exit(1);
-}
+// Function to fetch Star Wars characters based on film ID
+async function fetchStarWarsCharacters(filmId) {
+  try {
+    // Construct API endpoint for fetching film details
+    const filmUrl = `https://swapi-api.hbtn.io/api/films/${filmId}`;
+    let filmResponse = await request(filmUrl);
+    let filmData = JSON.parse(filmResponse.body);
+    
+    // Extract characters' URLs from the film data
+    const characterUrls = filmData.characters;
 
-const movieId = process.argv[2];
-const apiUrl = `https://swapi-api.alx-tools.com/api/films/${movieId}`;
-
-// Fetch the movie details based on the Movie ID
-request(apiUrl, (err, response, body) => {
-  if (err || response.statusCode !== 200) {
-    console.error('Error fetching data:', err || `Status Code: ${response.statusCode}`);
-    return;
-  }
-
-  // Parse the response and retrieve the list of character URLs
-  const characters = JSON.parse(body).characters;
-  
-  // Fetch and display each character's name
-  getCharacterNames(characters);
-});
-
-// Function to fetch and print character names recursively
-function getCharacterNames(characterUrls, index = 0) {
-  if (index === characterUrls.length) return; // Stop when all characters are processed
-
-  request(characterUrls[index], (err, response, body) => {
-    if (!err && response.statusCode === 200) {
-      console.log(JSON.parse(body).name);
-      getCharacterNames(characterUrls, index + 1); // Process next character
-    } else {
-      console.error('Error fetching character:', err || `Status Code: ${response.statusCode}`);
+    // Iterate through each character URL and fetch their name
+    for (const url of characterUrls) {
+      let characterResponse = await request(url);
+      let characterData = JSON.parse(characterResponse.body);
+      console.log(characterData.name);
     }
-  });
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
 }
+
+// Call the function with the provided film ID
+fetchStarWarsCharacters(filmId);
