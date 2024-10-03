@@ -1,21 +1,27 @@
 #!/usr/bin/python3
 
 def makeChange(coins, total):
-    # If total is 0 or less, no coins are needed
-    if total <= 0:
-        return 0
+  """
+  This function determines the fewest number of coins needed to meet a given amount.
+  """
 
-    # Initialize a list to store the minimum number
-    dp = [total + 1] * (total + 1)
+  # Handle base cases
+  if total == 0:
+    return 0
+  elif total < 0:
+    return -1
 
-    # Zero coins are needed to make a total of 0
-    dp[0] = 0
+  # Initialize a table to store the minimum number of coins needed for each amount up to the total
+  dp = [float('inf')] * (total + 1)
 
-    # Build up the dp array by checking each amount from 1 to total
-    for amount in range(1, total + 1):
-        for coin in coins:
-            if coin <= amount:
-                dp[amount] = min(dp[amount], dp[amount - coin] + 1)
+  # Initialize the minimum number of coins needed for 0 amount as 0
+  dp[0] = 0
 
-    # If dp[total] is still total + 1
-    return dp[total] if dp[total] != total + 1 else -1
+  # Iterate through each coin denomination
+  for coin in coins:
+    # For each amount from 0 to the total, update the minimum number of coins if possible
+    for amount in range(coin, total + 1):
+      dp[amount] = min(dp[amount], dp[amount - coin] + 1)
+
+  # Check if the total amount can be made with the available coins
+  return dp[total] if dp[total] != float('inf') else -1
