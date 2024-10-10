@@ -1,25 +1,31 @@
 #!/usr/bin/python3
 
-"""
-Returns the perimeter of the island described in grid.
-"""
 def island_perimeter(grid):
+    """
+    Returns the perimeter of the island described in grid
+    """
+    rows, cols = len(grid), len(grid[0])
     perimeter = 0
-    rows = len(grid)
-    cols = len(grid[0]) if rows > 0 else 0
 
-    for i in range(rows):
-        for j in range(cols):
-            if grid[i][j] == 1:
-                # Start with adding 4 sides of the square
-                perimeter += 4
+    for row in range(rows):
+        for col in range(cols):
+            if grid[row][col] == 1:
+                perimeter += 4  # Add 4 for potential edges
 
-                # If there is land above the current cell, subtract 2 from the perimeter
-                if i > 0 and grid[i - 1][j] == 1:
-                    perimeter -= 2
+                # Check if left neighbor is water
+                if col - 1 < 0 or grid[row][col - 1] == 0:
+                    perimeter += 1
 
-                # If there is land to the left of the current cell, subtract 2 from the perimeter
-                if j > 0 and grid[i][j - 1] == 1:
-                    perimeter -= 2
+                # Check if right neighbor is water
+                if col + 1 >= cols or grid[row][col + 1] == 0:
+                    perimeter += 1
+
+                # Check if top neighbor is water (if not on top row)
+                if row - 1 >= 0 and grid[row - 1][col] == 0:
+                    perimeter += 1
+
+                # Check if bottom neighbor is water (if not on bottom row)
+                if row + 1 < rows and grid[row + 1][col] == 0:
+                    perimeter += 1
 
     return perimeter
