@@ -1,35 +1,46 @@
 #!/usr/bin/python3
 
-def is_winner(rounds, numbers):
-    if rounds <= 0 or numbers is None:
+def sieve_of_eratosthenes(n):
+    primes = [True] * (n + 1)
+    primes[0] = primes[1] = False
+    for i in range(2, int(n**0.5) + 1):
+        if primes[i]:
+            for j in range(i * i, n + 1, i):
+                primes[j] = False
+    return primes
+
+def count_primes_up_to(primes, n):
+    return sum(1 for i in range(1, n + 1) if primes[i])
+
+def isWinner(x, nums):
+    if not nums or x < 1:
         return None
-    if rounds != len(numbers):
-        return None
 
-    ben_score = 0
-    maria_score = 0
-    primes = [1] * (max(numbers) + 1)
-    primes[0], primes[1] = 0, 0
+    # Determine the maximum value of `n` to consider
+    max_num = max(nums)
+    
+    # Use Sieve of Eratosthenes to precompute prime numbers up to `max_num`
+    primes = sieve_of_eratosthenes(max_num)
+    
+    # Track the scores of each player
+    maria_wins = 0
+    ben_wins = 0
 
-    for i in range(2, len(primes)):
-        mark_non_primes(primes, i)
-
-    for n in numbers:
-        if sum(primes[:n + 1]) % 2 == 0:
-            ben_score += 1
+    # Play each round of the game
+    for n in nums:
+        # Determine the number of primes up to `n`
+        prime_count = count_primes_up_to(primes, n)
+        
+        # If the prime count is odd, Maria wins; otherwise, Ben wins
+        if prime_count % 2 == 1:
+            maria_wins += 1
         else:
-            maria_score += 1
+            ben_wins += 1
 
-    if ben_score > maria_score:
-        return "Ben"
-    if maria_score > ben_score:
+    # Determine the overall winner based on who has more wins
+    if maria_wins > ben_wins:
         return "Maria"
+    elif ben_wins > maria_wins:
+        return "Ben"
     return None
-
-def mark_non_primes(array, number):
-    for i in range(2, len(array)):
-        try:
-            array[i * number] = 0
-        except (ValueError, IndexError):
-            break
 
