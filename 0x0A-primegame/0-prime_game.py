@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 
-def find_multiples(num, targets):
-    for i in targets[:]:
+def findMultiples(num, targets):
+    for i in targets:
         if i % num == 0:
             targets.remove(i)
     return targets
 
-def is_prime(i):
+def isPrime(i):
     if i == 1:
         return False
     for j in range(2, i):
@@ -14,17 +14,17 @@ def is_prime(i):
             return False
     return True
 
-def find_primes(n):
+def findPrimes(n):
     counter = 0
     target = list(n)
     for i in range(1, len(target) + 1):
-        if is_prime(i):
+        if isPrime(i):
             counter += 1
             target.remove(i)
-            target = find_multiples(i, target)
+            target = findMultiples(i, target)
     return counter
 
-def is_winner(x, nums):
+def isWinner(x, nums):
     players = {'Maria': 0, 'Ben': 0}
     cluster = set()
     for elem in range(x):
@@ -34,7 +34,7 @@ def is_winner(x, nums):
             cluster.add(i)
             if i == num + 1:
                 break
-        temp = find_primes(cluster)
+        temp = findPrimes(cluster)
 
         if temp % 2 == 0:
             players['Ben'] += 1
