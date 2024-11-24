@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 def rotate_2d_matrix(matrix):
     """
     Rotates a 2D matrix 90 degrees clockwise in place.
@@ -10,4 +12,4 @@ def rotate_2d_matrix(matrix):
     
     # Step 2: Reverse each row
     for row in matrix:
-        row.reverse()
+        row.revers()
