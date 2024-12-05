@@ -1,25 +1,32 @@
 #!/usr/bin/python3
 
+"""
+Module: island_perimeter
+
+"""
 def island_perimeter(grid):
     """
-    Returns the perimeter of the island described in grid.
+    Calculate the perimeter of the island in the grid.
     """
-    rows = len(grid)
-    cols = len(grid[0]) if rows > 0 else 0
     perimeter = 0
 
-    for i in range(rows):
-        for j in range(cols):
-            if grid[i][j] == 1:
-                # Each land cell contributes 4 to the perimeter initially
-                perimeter += 4
-                
-                # Check above (i-1)
-                if i > 0 and grid[i-1][j] == 1:
-                    perimeter -= 2  # Subtract 2 for the shared edge
+    if not grid or not isinstance(grid, list) or not all(isinstance(row, list) for row in grid):
+        return 0
+    for row_idx in range(len(grid)):
+        for col_idx in range(len(grid[row_idx])):
+            # Only process land cells
+            if grid[row_idx][col_idx] == 1:
+                # Check top
+                if row_idx == 0 or grid[row_idx - 1][col_idx] == 0:
+                    perimeter += 1
+                # Check bottom
+                if row_idx == len(grid) - 1 or grid[row_idx + 1][col_idx] == 0:
+                    perimeter += 1
+                # Check left
+                if col_idx == 0 or grid[row_idx][col_idx - 1] == 0:
+                    perimeter += 1
+                # Check right
+                if col_idx == len(grid[row_idx]) - 1 or grid[row_idx][col_idx + 1] == 0:
+                    perimeter += 1
 
-                # Check left (j-1)
-                if j > 0 and grid[i][j-1] == 1:
-                    perimeter -= 2  # Subtract 2 for the shared edge
-    
     return perimeter
